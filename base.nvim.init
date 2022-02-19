@@ -1,0 +1,19 @@
+set encoding=utf-8
+
+set incsearch
+
+set number
+set relativenumber
+set syntax=enable
+set colorcolumn=99
+
+set shiftwidth=4
+set tabstop=8
+set smarttab
+set softtabstop=0
+set expandtab
+set autoindent
+
+call plug#begin()
+Plug 'https://github.com/vim-airline/vim-airline'
+call plug#end()
