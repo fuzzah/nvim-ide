@@ -24,6 +24,10 @@ You are advised to use cool-retro-term for better experience.
     * 3.8
     * 3.9
     * 3.10
+* additional nvim plugins:
+    * nvim-lspconfig
+* npm with modules:
+    * pyright
 
 # Using
 ### Clone this repo

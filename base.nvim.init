@@ -5,7 +5,6 @@ set incsearch
 set number
 set relativenumber
 set syntax=enable
-set colorcolumn=99
 
 set shiftwidth=4
 set tabstop=8
