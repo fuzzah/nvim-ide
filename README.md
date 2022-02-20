@@ -41,3 +41,8 @@ It is implied that current user is in the docker group and can run docker comman
 ./build_image.sh
 ```
 If it's not the case, you should probably edit this script and put there correct uid, gid and desired user name.
+
+### Run with your sources
+```shell
+docker run --rm -v your/sources:/src -it nvim-ide-python:latest
+```
