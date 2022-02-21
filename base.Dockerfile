@@ -46,3 +46,4 @@ RUN : Configure neovim \
     && :
 
 WORKDIR /src
+ENV TERM=xterm-256color
