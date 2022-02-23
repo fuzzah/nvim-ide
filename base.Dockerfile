@@ -9,6 +9,7 @@ RUN : Install common deps \
         file less psmisc \
         glibc-locale \
         sudo \
+        npm ripgrep fd \
     && zypper clean -a \
     && :
 RUN ln -s /usr/bin/nvim /usr/bin/vim

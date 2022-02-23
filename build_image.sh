@@ -1,6 +1,8 @@
 #!/bin/bash
 set -xe
 
+# EDIT THESE if you run docker as root / sudo
+# AND want OK rights in mounted directory
 user=$USER
 uid=$(id -u)
 gid=$(id -g)

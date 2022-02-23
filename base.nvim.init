@@ -14,5 +14,9 @@ set expandtab
 set autoindent
 
 call plug#begin()
-Plug 'https://github.com/vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline'
+Plug 'neovim/nvim-lspconfig'
+Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
 call plug#end()

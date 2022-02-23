@@ -7,15 +7,20 @@ You are advised to use cool-retro-term for better experience.
 * uses opensuse/tumbleweed
 * nvim 0.6.1+ with vim-plug and plugins:
     * vim-airline
+    * nvim-lspconfig
+    * nvim-treesitter
+    * plenary.nvim
+    * telescope.nvim
 * git
+* npm
+* ripgrep & fd utils
 * tmux with mouse mode enabled
-* user dev with uid 1000 and gid 1000 (changable with `--build-arg`)
-* fish shell with abbreviations (aliases):
+* non-root user to not mess access rights of your source code (can use sudo)
+* fish shell with abbreviations (aliases) defined in [base.fish](base.fish):
     * git (gs, ga, gas, gc, gm, gk, ...)
     * find (ff, fff, fd, ffd)
     * edit configs (nvim: cfv, fish: cff, bashrc: cfb)
-* workdir is /src with correct permissions (no need to chown)
-
+* workdir is /src
 
 
 ## Python image
@@ -24,10 +29,8 @@ You are advised to use cool-retro-term for better experience.
     * 3.8
     * 3.9
     * 3.10
-* additional nvim plugins:
-    * nvim-lspconfig
-* npm with modules:
-    * pyright
+* pyright lsp
+* nvim bindings defined in [bindings.nvim.init](bindings.nvim.init)
 
 # Using
 ### Clone this repo
@@ -36,7 +39,7 @@ git clone https://github.com/fuzzah/nvim-ide
 cd nvim-ide
 ```
 ### Build images
-It is implied that current user is in the docker group and can run docker commands without sudo.
+It is implied that current user is in the docker group and/or can run docker commands without sudo.
 ```shell
 ./build_image.sh
 ```
@@ -46,3 +49,5 @@ If it's not the case, you should probably edit this script and put there correct
 ```shell
 docker run --rm -v your/sources:/src -it nvim-ide-python:latest
 ```
+
+Note, that nvim is symlinked to vim. Also python and pip are symlinks to their latest versions.

@@ -1,0 +1,17 @@
+let mapleader = "\<Space>"
+
+nnoremap gD         <cmd>lua vim.lsp.buf.declaration()<CR>
+nnoremap gd         <cmd>lua vim.lsp.buf.definition()<CR>
+nnoremap gi         <cmd>lua vim.lsp.buf.implementation()<CR>
+nnoremap gr         <cmd>lua vim.lsp.buf.references()<CR>
+nnoremap K          <cmd>lua vim.lsp.buf.hover()<CR>
+nnoremap <c-k>      <cmd>lua vim.lsp.buf.signature_help()<CR>
+nnoremap <Leader>r  <cmd>lua vim.lsp.buf.rename()<CR>
+nnoremap <Leader>a  <cmd>lua vim.lsp.buf.code_action()<CR>
+nnoremap <Leader>f  <cmd>lua vim.lsp.buf.formatting()<CR>
+nnoremap <Leader>R  <cmd>lua vim.lsp.buf.document_symbol()<CR>
+nnoremap <Leader>W  <cmd>lua vim.lsp.buf.workspace_symbol()<CR>
+nnoremap <Leader>ff <cmd>Telescope find_files<CR>
+nnoremap <Leader>fg <cmd>Telescope live_grep<CR>
+nnoremap <Leader>fb <cmd>Telescope buffers<CR>
+nnoremap <Leader>fh <cmd>Telescope help_tags<CR>
