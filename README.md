@@ -1,6 +1,9 @@
 # nvim-ide
-Docker images with preconfigured nvim, plugins and lsp.<br>
-You are advised to use cool-retro-term for better experience.
+Docker images with nvim, plugins and lsp preconfigured by fuzzah for fuzzah.<br>
+Anyway, if you use it:
+* at least use [cool-retro-term](https://github.com/Swordfish90/cool-retro-term) for better experience;
+* you may want to customize keybindings and plugins;
+* note, that changes will come from time to time just to break everything.
 
 # What's inside
 ## Base image
