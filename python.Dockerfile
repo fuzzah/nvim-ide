@@ -38,7 +38,7 @@ require("lspconfig").pyright.setup{}\n\
 EOF\n\
 \n\
 set completeopt-=preview\n\
-autocmd Filetype python setlocal omnifunc=v:lua.vim.lsp.omnifuncn\n\
+autocmd Filetype python setlocal omnifunc=v:lua.vim.lsp.omnifunc\n\
 \n' >> ~/.config/nvim/init.vim \
     && :
 
