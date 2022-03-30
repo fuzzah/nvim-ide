@@ -17,8 +17,8 @@ RUN : update-alternatives for python and pip \
     && rm -f /usr/local/bin/pip \
     && update-alternatives --install /usr/bin/python python /usr/bin/python3.10 0 \
     && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 0 \
-    && update-alternatives --install /usr/local/bin/pip pip /usr/local/bin/pip3.10 0 \
-    && update-alternatives --install /usr/local/bin/pip3 pip3 /usr/local/bin/pip3.10 0 \
+    && update-alternatives --install /usr/bin/pip pip /usr/bin/pip3.10 0 \
+    && update-alternatives --install /usr/bin/pip3 pip3 /usr/bin/pip3.10 0 \
     && :
 
 RUN : Install pyright lsp \

@@ -7,7 +7,7 @@ set relativenumber
 set syntax=enable
 
 set shiftwidth=4
-set tabstop=8
+set tabstop=4
 set smarttab
 set softtabstop=0
 set expandtab
