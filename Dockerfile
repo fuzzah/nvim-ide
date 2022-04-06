@@ -123,7 +123,7 @@ FROM nvim-ide-cxx-${cxx} AS nvim-ide
 RUN : \
     && printf '\n\
 set completeopt-=preview\n\
-set omnifunc=v:lua.vim.lsp.omnifunc\n\
+autocmd Filetype * setlocal omnifunc=v:lua.vim.lsp.omnifunc\n\
 \n' >> ~/.config/nvim/init.vim \
     && :
 
