@@ -15,6 +15,7 @@ Anyway, if you use it:
     * plenary.nvim
     * telescope.nvim
 * git
+* strace
 * npm
 * ripgrep & fd utils
 * tmux with mouse mode enabled
@@ -25,14 +26,25 @@ Anyway, if you use it:
     * edit configs (nvim: cfv, fish: cff, bashrc: cfb)
 * workdir is /src
 
-
-## Python image
-* uses base image
+## Python
+(installable with `--build-arg python=true`)
 * python & pip from repos:
     * 3.8
     * 3.9
     * 3.10
 * pyright lsp
+
+## C and C++
+(installable with `--build-arg cxx=true`)
+* clang (includes clangd lsp), llvm
+* gcc, gcc-c++
+* cmake
+* ninja
+* lcov
+* gdb
+* ltrace
+
+## Common last stage
 * nvim bindings defined in [bindings.nvim.init](bindings.nvim.init)
 
 # Using
@@ -41,16 +53,44 @@ Anyway, if you use it:
 git clone https://github.com/fuzzah/nvim-ide
 cd nvim-ide
 ```
-### Build images
-It is implied that current user is in the docker group and/or can run docker commands without sudo.
+### Build image
+You can use docker build arguments:<br>
+`user` is user name in docker<br>
+`uid` and `gid` are user id and group id for user in docker<br>
+`python`, `cxx`: set to `true` if you need this language support in nvim.<br>
+Example:
 ```shell
-./build_image.sh
+DOCKER_BUILDKIT=1 docker build \
+    --build-arg user=$USER \
+    --build-arg uid=$(id -u) --build-arg gid=$(id -g) \
+    --build-arg python=true --build-arg cxx=true -t nvim-ide .
 ```
-If it's not the case, you should probably edit this script and put there correct uid, gid and desired user name.
+**Note: without buildkit image building may fail.**<br>
+If you run `docker build` as root, you may want to use specific values for uid and gid:
+```shell
+DOCKER_BUILDKIT=1 docker build \
+    --build-arg user=dev \
+    --build-arg uid=1000 --build-arg gid=1000 \
+    --build-arg python=true --build-arg cxx=true -t nvim-ide .
+```
+
 
 ### Run with your sources
 ```shell
-docker run --rm -v your/sources:/src -it nvim-ide-python:latest
+docker run --rm -v your/sources:/src -it nvim-ide
 ```
 
 Note, that nvim is symlinked to vim. Also python and pip are symlinks to their latest versions.
+
+
+
+# FAQ
+## How to use bash? It autostarts fish!
+Start bash with `--norc` option to skip loading of bashrc file:
+```shell
+bash --norc
+```
+
+## Why opensuse/tumbleweed? Why not alpine?
+Tumbleweed provides recent versions of python, clang, gcc and most importantly neovim.<br>
+Alpine would cause problems with python wheels and also with C/C++ as it's built with musl.<br>

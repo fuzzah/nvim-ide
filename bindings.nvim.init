@@ -1,3 +1,18 @@
+set encoding=utf-8
+
+set incsearch
+
+set number
+set relativenumber
+set syntax=enable
+
+set shiftwidth=4
+set tabstop=4
+set smarttab
+set softtabstop=0
+set expandtab
+set autoindent
+
 let mapleader = "\<Space>"
 
 nnoremap gD         <cmd>lua vim.lsp.buf.declaration()<CR>
@@ -15,3 +30,4 @@ nnoremap <Leader>ff <cmd>Telescope find_files<CR>
 nnoremap <Leader>fg <cmd>Telescope live_grep<CR>
 nnoremap <Leader>fb <cmd>Telescope buffers<CR>
 nnoremap <Leader>fh <cmd>Telescope help_tags<CR>
+
