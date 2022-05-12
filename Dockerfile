@@ -1,3 +1,4 @@
+ARG crystal=false
 ARG cxx=false
 ARG python=false
 
@@ -57,9 +58,40 @@ ENV TERM=xterm-256color
 
 
 
-FROM nvim-ide-base AS nvim-ide-cxx-false
+# crystal: Crystal Language
+FROM nvim-ide-base AS nvim-ide-crystal-false
 
-FROM nvim-ide-base AS nvim-ide-cxx-true
+FROM nvim-ide-base AS nvim-ide-crystal-true
+
+USER root
+# basically do as crystal devs suggest: https://crystal-lang.org/install/on_opensuse/
+RUN : \
+    && zypper install -y gzip \
+    && zypper ar -f \
+        https://download.opensuse.org/repositories/devel:/languages:/crystal/openSUSE_Tumbleweed/devel:languages:crystal.repo \
+    && zypper --gpg-auto-import-keys install -y crystal \
+    && zypper clean -a \
+    && :
+
+# lsp
+ARG GIT_CRYSTALLINE_VERSION="0.6.0"
+RUN : \
+    && cd /usr/bin/ \
+    && curl -L \
+        https://github.com/elbywan/crystalline/releases/download/v${GIT_CRYSTALLINE_VERSION}/crystalline_x86_64-unknown-linux-gnu.gz \
+        | gzip -d > ./crystalline \
+    && chown ${user}:${user} ./crystalline \
+    && chmod a+x ./crystalline \
+    && :
+
+USER ${user}
+RUN printf 'lua require("lspconfig").crystalline.setup{}\n\n' >> ~/.config/nvim/init.vim
+
+
+# cxx: C and C++
+FROM nvim-ide-crystal-${crystal} AS nvim-ide-cxx-false
+
+FROM nvim-ide-crystal-${crystal} AS nvim-ide-cxx-true
 USER root
 RUN : \
     && zypper update -y \
@@ -78,6 +110,7 @@ RUN printf 'lua require("lspconfig").clangd.setup{}\n\n' >> ~/.config/nvim/init.
 
 
 
+# py: Python3
 FROM nvim-ide-cxx-${cxx} AS nvim-ide-python-false
 
 FROM nvim-ide-cxx-${cxx} AS nvim-ide-python-true

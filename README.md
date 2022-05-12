@@ -26,6 +26,13 @@ Anyway, if you use it:
     * edit configs (nvim: cfv, fish: cff, bashrc: cfb)
 * workdir is /src
 
+
+## Crystal
+(installable with `--build-arg crystal=true`)
+* crystal with `shards` package manager
+* crystalline lsp
+
+
 ## C and C++
 (installable with `--build-arg cxx=true`)
 * clang (includes clangd lsp), llvm
@@ -59,7 +66,7 @@ cd nvim-ide
 You can use docker build arguments:<br>
 `user` is user name in docker<br>
 `uid` and `gid` are user id and group id for user in docker<br>
-`python`, `cxx`: set to `true` if you need this language support in nvim.<br>
+`crystal`, `cxx`, `python`: set to `true` if you need this language support in nvim.<br>
 Example:
 ```shell
 DOCKER_BUILDKIT=1 docker build \
