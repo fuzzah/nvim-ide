@@ -1,5 +1,5 @@
-ARG python=false
 ARG cxx=false
+ARG python=false
 
 FROM opensuse/tumbleweed AS nvim-ide-base
 
@@ -56,10 +56,31 @@ WORKDIR /src
 ENV TERM=xterm-256color
 
 
-FROM nvim-ide-base AS nvim-ide-python-false
 
-FROM nvim-ide-base AS nvim-ide-python-true
+FROM nvim-ide-base AS nvim-ide-cxx-false
 
+FROM nvim-ide-base AS nvim-ide-cxx-true
+USER root
+RUN : \
+    && zypper update -y \
+    && zypper install -y \
+        gcc gcc-c++ gcc-devel \
+        clang lld llvm llvm-devel \
+        libc++1 libc++-devel \
+        libc++abi1 libc++abi-devel \
+        lcov gdb ltrace \
+        cmake ninja \
+    && zypper clean -a \
+    && :
+
+USER ${user}
+RUN printf 'lua require("lspconfig").clangd.setup{}\n\n' >> ~/.config/nvim/init.vim
+
+
+
+FROM nvim-ide-cxx-${cxx} AS nvim-ide-python-false
+
+FROM nvim-ide-cxx-${cxx} AS nvim-ide-python-true
 USER root
 RUN : Install python and pip \
     && zypper update -y \
@@ -97,28 +118,7 @@ RUN : \
 
 
 
-FROM nvim-ide-python-${python} AS nvim-ide-cxx-false
-
-FROM nvim-ide-python-${python} AS nvim-ide-cxx-true
-USER root
-RUN : \
-    && zypper update -y \
-    && zypper install -y \
-        gcc gcc-c++ gcc-devel \
-        clang lld llvm llvm-devel \
-        libc++1 libc++-devel \
-        libc++abi1 libc++abi-devel \
-        lcov gdb ltrace \
-        cmake ninja \
-    && zypper clean -a \
-    && :
-
-USER ${user}
-RUN printf 'lua require("lspconfig").clangd.setup{}\n\n' >> ~/.config/nvim/init.vim
-
-
-
-FROM nvim-ide-cxx-${cxx} AS nvim-ide
+FROM nvim-ide-python-${python} AS nvim-ide
 
 RUN : \
     && printf '\n\

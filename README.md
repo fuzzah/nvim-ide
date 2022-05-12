@@ -8,7 +8,7 @@ Anyway, if you use it:
 # What's inside
 ## Base image
 * uses opensuse/tumbleweed
-* nvim 0.6.1+ with vim-plug and plugins:
+* nvim 0.7.0+ with vim-plug and plugins:
     * vim-airline
     * nvim-lspconfig
     * nvim-treesitter
@@ -26,14 +26,6 @@ Anyway, if you use it:
     * edit configs (nvim: cfv, fish: cff, bashrc: cfb)
 * workdir is /src
 
-## Python
-(installable with `--build-arg python=true`)
-* python & pip from repos:
-    * 3.8
-    * 3.9
-    * 3.10
-* pyright lsp
-
 ## C and C++
 (installable with `--build-arg cxx=true`)
 * clang (includes clangd lsp), llvm
@@ -43,6 +35,16 @@ Anyway, if you use it:
 * lcov
 * gdb
 * ltrace
+
+
+## Python
+(installable with `--build-arg python=true`)
+* python & pip from repos:
+    * 3.8
+    * 3.9
+    * 3.10
+* pyright lsp
+
 
 ## Common last stage
 * nvim bindings defined in [bindings.nvim.init](bindings.nvim.init)
@@ -63,7 +65,7 @@ Example:
 DOCKER_BUILDKIT=1 docker build \
     --build-arg user=$USER \
     --build-arg uid=$(id -u) --build-arg gid=$(id -g) \
-    --build-arg python=true --build-arg cxx=true -t nvim-ide .
+    --build-arg cxx=true --build-arg python=true -t nvim-ide .
 ```
 **Note: without buildkit image building may fail.**<br>
 If you run `docker build` as root, you may want to use specific values for uid and gid:
@@ -71,7 +73,7 @@ If you run `docker build` as root, you may want to use specific values for uid a
 DOCKER_BUILDKIT=1 docker build \
     --build-arg user=dev \
     --build-arg uid=1000 --build-arg gid=1000 \
-    --build-arg python=true --build-arg cxx=true -t nvim-ide .
+    --build-arg cxx=true --build-arg python=true -t nvim-ide .
 ```
 
 
