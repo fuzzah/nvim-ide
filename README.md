@@ -32,6 +32,8 @@ Anyway, if you use it:
 * crystal with `shards` package manager
 * crystalline lsp
 
+**Note: crystalline lsp seems to be broken, extremely limited or improperly installed :(**
+
 
 ## C and C++
 (installable with `--build-arg cxx=true`)
