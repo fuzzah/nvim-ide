@@ -55,6 +55,15 @@ Anyway, if you use it:
 * pyright lsp
 
 
+## Rust
+(installable with `--build-arg rust=true`)
+* rustup
+* rustc & cargo 1.61.0
+* rust-analyzer lsp
+* gdb
+* ltrace
+
+
 ## Common last stage
 * nvim bindings defined in [bindings.nvim.init](bindings.nvim.init)
 
@@ -68,7 +77,7 @@ cd nvim-ide
 You can use docker build arguments:<br>
 `user` is user name in docker<br>
 `uid` and `gid` are user id and group id for user in docker<br>
-`crystal`, `cxx`, `python`: set to `true` if you need this language support in nvim.<br>
+`crystal`, `cxx`, `python`, `rust`: set to `true` if you need this language support in nvim.<br>
 Example:
 ```shell
 DOCKER_BUILDKIT=1 docker build \
