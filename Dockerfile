@@ -196,6 +196,8 @@ autocmd Filetype * setlocal omnifunc=v:lua.vim.lsp.omnifunc\n\
 \n\
 set updatetime=500\n\
 autocmd CursorHold * lua vim.diagnostic.open_float(nil, { focusable = false })\n\
+\n\
+colorscheme murphy\n\
 \n' >> ~/.config/nvim/init.vim \
     && :
 
