@@ -7,7 +7,6 @@ FROM opensuse/tumbleweed AS nvim-ide-base
 
 RUN : Install common deps \
     && zypper update -y \
-    && zypper remove -y busybox-findutils \
     && zypper install -y \
         neovim \
         git curl \
