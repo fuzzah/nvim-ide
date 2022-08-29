@@ -84,7 +84,7 @@ cd nvim-ide
 You can use docker build arguments:<br>
 `user` is user name in docker<br>
 `uid` and `gid` are user id and group id for user in docker<br>
-`crystal`, `cxx`, `python`, `rust`: set to `true` if you need this language support in nvim.<br>
+`crystal`, `cxx`, `python`, `rust`, `typescript`: set to `true` if you need this language support in nvim.<br>
 Example:
 ```shell
 DOCKER_BUILDKIT=1 docker build \
