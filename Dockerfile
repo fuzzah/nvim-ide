@@ -2,6 +2,7 @@ ARG crystal=false
 ARG cxx=false
 ARG python=false
 ARG rust=false
+ARG typescript=false
 
 FROM opensuse/tumbleweed AS nvim-ide-base
 
@@ -153,6 +154,7 @@ RUN : \
 
 
 
+# Rust
 FROM nvim-ide-python-${python} AS nvim-ide-rust-false
 
 FROM nvim-ide-python-${python} AS nvim-ide-rust-true
@@ -186,7 +188,25 @@ RUN printf 'lua require("lspconfig").rust_analyzer.setup{}\n\n' >> ~/.config/nvi
 
 
 
-FROM nvim-ide-rust-${rust} AS nvim-ide
+# TypeScript
+FROM nvim-ide-rust-${rust} AS nvim-ide-typescript-false
+
+FROM nvim-ide-rust-${rust} AS nvim-ide-typescript-true
+USER root
+RUN : \
+    && npm install -g \
+        typescript \
+        eslint \
+        typescript-language-server \
+    && :
+
+USER ${user}
+
+RUN printf 'lua require("lspconfig").tsserver.setup{}\n\n' >> ~/.config/nvim/init.vim
+
+
+
+FROM nvim-ide-typescript-${typescript} AS nvim-ide
 
 RUN : \
     && printf '\n\

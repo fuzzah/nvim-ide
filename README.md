@@ -64,6 +64,13 @@ Anyway, if you use it:
 * ltrace
 
 
+## TypeScript
+(installable with `--build-arg typescript=true`)
+* typescript
+* eslint
+* typescript-language-server
+
+
 ## Common last stage
 * nvim bindings defined in [bindings.nvim.init](bindings.nvim.init)
 
@@ -83,7 +90,7 @@ Example:
 DOCKER_BUILDKIT=1 docker build \
     --build-arg user=$USER \
     --build-arg uid=$(id -u) --build-arg gid=$(id -g) \
-    --build-arg cxx=true --build-arg python=true -t nvim-ide .
+    --build-arg cxx=true --build-arg python=true -t fuzzah-nvim-ide .
 ```
 **Note: without buildkit image building may fail.**<br>
 If you run `docker build` as root, you may want to use specific values for uid and gid:
@@ -91,13 +98,13 @@ If you run `docker build` as root, you may want to use specific values for uid a
 DOCKER_BUILDKIT=1 docker build \
     --build-arg user=dev \
     --build-arg uid=1000 --build-arg gid=1000 \
-    --build-arg cxx=true --build-arg python=true -t nvim-ide .
+    --build-arg cxx=true --build-arg python=true -t fuzzah-nvim-ide .
 ```
 
 
 ### Run with your sources
 ```shell
-docker run --rm -v your/sources:/src -it nvim-ide
+docker run --pull=never --rm -v /your/sources:/src -it fuzzah-nvim-ide
 ```
 
 Note, that nvim is symlinked to vim. Also python and pip are symlinks to their latest versions.
