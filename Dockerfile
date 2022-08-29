@@ -166,12 +166,12 @@ RUN : \
     && :
 
 USER ${user}
-ARG RUST_VERSION=1.61.0
+ARG RUST_VERSION=1.63.0
 RUN : \
     && rustup toolchain install ${RUST_VERSION} \
     && :
 
-ARG RUST_ANALYZER_VERSION="2022-05-23"
+ARG RUST_ANALYZER_VERSION="2022-08-29"
 RUN : \
     && mkdir -p ~/.local/bin \
     && cd ~/.local/bin \

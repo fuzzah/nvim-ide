@@ -58,7 +58,7 @@ Anyway, if you use it:
 ## Rust
 (installable with `--build-arg rust=true`)
 * rustup
-* rustc & cargo 1.61.0
+* rustc & cargo 1.63.0
 * rust-analyzer lsp
 * gdb
 * ltrace
