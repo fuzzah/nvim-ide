@@ -8,12 +8,13 @@ Anyway, if you use it:
 # What's inside
 ## Base image
 * uses opensuse/tumbleweed
-* nvim 0.7.0+ with vim-plug and plugins:
+* nvim 0.7+ with vim-plug and plugins:
     * vim-airline
     * nvim-lspconfig
     * nvim-treesitter
     * plenary.nvim
     * telescope.nvim
+    * vim-crystal
 * git
 * strace
 * npm
@@ -31,8 +32,6 @@ Anyway, if you use it:
 (installable with `--build-arg crystal=true`)
 * crystal with `shards` package manager
 * crystalline lsp
-
-**Note: crystalline lsp seems to be broken, extremely limited or improperly installed :(**
 
 
 ## C and C++

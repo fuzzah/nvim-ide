@@ -4,5 +4,6 @@ Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
+Plug 'vim-crystal/vim-crystal'
 call plug#end()
 
