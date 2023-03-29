@@ -8,7 +8,7 @@ Anyway, if you use it:
 # What's inside
 ## Base image
 * uses opensuse/tumbleweed
-* nvim 0.7+ with vim-plug and plugins:
+* nvim 0.8+ with vim-plug and plugins:
     * vim-airline
     * nvim-lspconfig
     * nvim-treesitter
@@ -34,6 +34,14 @@ Anyway, if you use it:
 * crystalline lsp
 
 
+
+## C#
+(installable with `--build-arg csharp=true`)
+* dotnet-sdk-7.0
+* csharp-ls 0.7.0
+
+
+
 ## C and C++
 (installable with `--build-arg cxx=true`)
 * clang (includes clangd lsp), llvm
@@ -57,7 +65,7 @@ Anyway, if you use it:
 ## Rust
 (installable with `--build-arg rust=true`)
 * rustup
-* rustc & cargo 1.63.0
+* rustc & cargo 1.68.2
 * rust-analyzer lsp
 * gdb
 * ltrace
@@ -83,7 +91,7 @@ cd nvim-ide
 You can use docker build arguments:<br>
 `user` is user name in docker<br>
 `uid` and `gid` are user id and group id for user in docker<br>
-`crystal`, `cxx`, `python`, `rust`, `typescript`: set to `true` if you need this language support in nvim.<br>
+`crystal`, `csharp`, `cxx`, `python`, `rust`, `typescript`: set to `true` if you need this language support in nvim.<br>
 Example:
 ```shell
 DOCKER_BUILDKIT=1 docker build \

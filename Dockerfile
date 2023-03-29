@@ -1,4 +1,5 @@
 ARG crystal=false
+ARG csharp=false
 ARG cxx=false
 ARG python=false
 ARG rust=false
@@ -77,11 +78,11 @@ RUN : \
     && :
 
 # lsp
-ARG GIT_CRYSTALLINE_VERSION="0.6.0"
+ARG GIT_CRYSTALLINE_VERSION="0.8.0"
 RUN : \
     && cd /usr/bin/ \
     && curl -L \
-        https://github.com/elbywan/crystalline/releases/download/v${GIT_CRYSTALLINE_VERSION}/crystalline_x86_64-unknown-linux-gnu.gz \
+        https://github.com/elbywan/crystalline/releases/download/v${GIT_CRYSTALLINE_VERSION}/crystalline_x86_64-unknown-linux-musl.gz \
         | gzip -d > ./crystalline \
     && chown ${user}:${user} ./crystalline \
     && chmod a+x ./crystalline \
@@ -91,10 +92,43 @@ USER ${user}
 RUN printf 'lua require("lspconfig").crystalline.setup{}\n\n' >> ~/.config/nvim/init.vim
 
 
-# cxx: C and C++
-FROM nvim-ide-crystal-${crystal} AS nvim-ide-cxx-false
 
-FROM nvim-ide-crystal-${crystal} AS nvim-ide-cxx-true
+# sharp: C#
+FROM nvim-ide-crystal-${crystal} AS nvim-ide-csharp-false
+
+FROM nvim-ide-crystal-${crystal} AS nvim-ide-csharp-true
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
+ARG DOTNET_VERSION=7.0
+
+USER root
+RUN : \
+    && zypper update -y \
+    && zypper install -y \
+        libicu \
+    && rpm --import https://packages.microsoft.com/keys/microsoft.asc \
+    && curl -L https://packages.microsoft.com/config/opensuse/15/prod.repo \
+        -o /etc/zypp/repos.d/microsoft-prod.repo \
+    && zypper install -y dotnet-sdk-${DOTNET_VERSION} \
+    && zypper clean -a \
+    && :
+
+USER ${user}
+
+ARG DOTNET_CSHARP_LS_VERSION=0.7.0
+RUN : Install csharp-ls LSP server \
+    && dotnet tool install --no-cache --global \
+        csharp-ls --version ${DOTNET_CSHARP_LS_VERSION} \
+    && :
+ENV PATH "$PATH:/home/${user}/.dotnet/tools"
+
+RUN printf 'lua require("lspconfig").csharp_ls.setup{}\n\n' >> ~/.config/nvim/init.vim
+
+
+
+# cxx: C and C++
+FROM nvim-ide-csharp-${csharp} AS nvim-ide-cxx-false
+
+FROM nvim-ide-csharp-${csharp} AS nvim-ide-cxx-true
 USER root
 RUN : \
     && zypper update -y \
@@ -168,12 +202,12 @@ RUN : \
     && :
 
 USER ${user}
-ARG RUST_VERSION=1.63.0
+ARG RUST_VERSION=1.68.2
 RUN : \
     && rustup toolchain install ${RUST_VERSION} \
     && :
 
-ARG RUST_ANALYZER_VERSION="2022-08-29"
+ARG RUST_ANALYZER_VERSION="2023-03-27"
 RUN : \
     && mkdir -p ~/.local/bin \
     && cd ~/.local/bin \
