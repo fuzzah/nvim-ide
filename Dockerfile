@@ -1,6 +1,7 @@
 ARG crystal=false
 ARG csharp=false
 ARG cxx=false
+ARG go=false
 ARG python=false
 ARG rust=false
 ARG typescript=false
@@ -78,7 +79,7 @@ RUN : \
     && :
 
 # lsp
-ARG GIT_CRYSTALLINE_VERSION="0.8.0"
+ARG GIT_CRYSTALLINE_VERSION="0.9.0"
 RUN : \
     && cd /usr/bin/ \
     && curl -L \
@@ -147,29 +148,48 @@ RUN printf 'lua require("lspconfig").clangd.setup{}\n\n' >> ~/.config/nvim/init.
 
 
 
-# python: Python3
-FROM nvim-ide-cxx-${cxx} AS nvim-ide-python-false
+# go: Golang
+FROM nvim-ide-cxx-${cxx} AS nvim-ide-go-false
 
-FROM nvim-ide-cxx-${cxx} AS nvim-ide-python-true
+FROM nvim-ide-cxx-${cxx} AS nvim-ide-go-true
+USER root
+RUN : \
+    && zypper update -y \
+    && zypper install -y \
+        go1.20 go1.20-race go1.20-libstd go1.20-doc \
+    && zypper clean -a \
+    && :
+
+USER ${user}
+RUN : Install the gopls lsp \
+    && go install golang.org/x/tools/gopls@latest \
+    && :
+
+ENV PATH="/home/${user}/go/bin:${PATH}"
+
+RUN printf 'lua require("lspconfig").gopls.setup{}\n\n' >> ~/.config/nvim/init.vim
+
+
+
+# python: Python3
+FROM nvim-ide-go-${go} AS nvim-ide-python-false
+
+FROM nvim-ide-go-${go} AS nvim-ide-python-true
+ARG PY3_V=12
 USER root
 RUN : Install python and pip \
     && zypper update -y \
     && zypper install -y \
-        python38 python38-pip \
-        python39 python39-pip \
-        python310 python310-pip \
+        python3$PY3_V \
     && zypper clean -a \
-    && pip3.8 install --upgrade pip \
-    && pip3.9 install --upgrade pip \
-    && pip3.10 install --upgrade pip \
+    && python3.$PY3_V -m ensurepip \
     && :
 
 RUN : update-alternatives for python and pip \
-    && rm -f /usr/local/bin/pip \
-    && update-alternatives --install /usr/bin/python python /usr/bin/python3.10 0 \
-    && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 0 \
-    && update-alternatives --install /usr/bin/pip pip /usr/bin/pip3.10 0 \
-    && update-alternatives --install /usr/bin/pip3 pip3 /usr/bin/pip3.10 0 \
+    && update-alternatives --install /usr/bin/python python /usr/bin/python3.$PY3_V 0 \
+    && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.$PY3_V 0 \
+    && update-alternatives --install /usr/local/bin/pip pip /usr/local/bin/pip3.$PY3_V 0 \
+    && update-alternatives --install /usr/local/bin/pip3 pip3 /usr/local/bin/pip3.$PY3_V 0 \
     && :
 
 RUN : Install pyright lsp \
@@ -202,12 +222,12 @@ RUN : \
     && :
 
 USER ${user}
-ARG RUST_VERSION=1.68.2
+ARG RUST_VERSION=1.69.0
 RUN : \
     && rustup toolchain install ${RUST_VERSION} \
     && :
 
-ARG RUST_ANALYZER_VERSION="2023-03-27"
+ARG RUST_ANALYZER_VERSION="2023-05-29"
 RUN : \
     && mkdir -p ~/.local/bin \
     && cd ~/.local/bin \

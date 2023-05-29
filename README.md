@@ -8,7 +8,7 @@ Anyway, if you use it:
 # What's inside
 ## Base image
 * uses opensuse/tumbleweed
-* nvim 0.8+ with vim-plug and plugins:
+* nvim 0.9+ with vim-plug and plugins:
     * vim-airline
     * nvim-lspconfig
     * nvim-treesitter
@@ -34,12 +34,10 @@ Anyway, if you use it:
 * crystalline lsp
 
 
-
 ## C#
 (installable with `--build-arg csharp=true`)
 * dotnet-sdk-7.0
 * csharp-ls 0.7.0
-
 
 
 ## C and C++
@@ -53,19 +51,22 @@ Anyway, if you use it:
 * ltrace
 
 
+## Go
+(installable with `--build-arg go=true`)
+* go1.20 from repos
+* gopls lsp
+
+
 ## Python
 (installable with `--build-arg python=true`)
-* python & pip from repos:
-    * 3.8
-    * 3.9
-    * 3.10
+* python3.12 from repos & pip via ensurepip
 * pyright lsp
 
 
 ## Rust
 (installable with `--build-arg rust=true`)
 * rustup
-* rustc & cargo 1.68.2
+* rustc & cargo 1.69.0
 * rust-analyzer lsp
 * gdb
 * ltrace
@@ -91,7 +92,7 @@ cd nvim-ide
 You can use docker build arguments:<br>
 `user` is user name in docker<br>
 `uid` and `gid` are user id and group id for user in docker<br>
-`crystal`, `csharp`, `cxx`, `python`, `rust`, `typescript`: set to `true` if you need this language support in nvim.<br>
+`crystal`, `csharp`, `cxx`, `go`, `python`, `rust`, `typescript`: set to `true` if you need this language support in nvim.<br>
 Example:
 ```shell
 DOCKER_BUILDKIT=1 docker build \
@@ -114,8 +115,7 @@ DOCKER_BUILDKIT=1 docker build \
 docker run --pull=never --rm -v /your/sources:/src -it fuzzah-nvim-ide
 ```
 
-Note, that nvim is symlinked to vim. Also python and pip are symlinks to their latest versions.
-
+Note, that nvim is symlinked to vim.
 
 
 # FAQ
