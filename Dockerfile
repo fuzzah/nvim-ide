@@ -175,21 +175,21 @@ RUN printf 'lua require("lspconfig").gopls.setup{}\n\n' >> ~/.config/nvim/init.v
 FROM nvim-ide-go-${go} AS nvim-ide-python-false
 
 FROM nvim-ide-go-${go} AS nvim-ide-python-true
-ARG PY3_V=12
+ARG PY3_V=11
 USER root
 RUN : Install python and pip \
     && zypper update -y \
     && zypper install -y \
         python3$PY3_V \
+        python3$PY3_V-pip \
     && zypper clean -a \
-    && python3.$PY3_V -m ensurepip \
     && :
 
 RUN : update-alternatives for python and pip \
     && update-alternatives --install /usr/bin/python python /usr/bin/python3.$PY3_V 0 \
     && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.$PY3_V 0 \
-    && update-alternatives --install /usr/local/bin/pip pip /usr/local/bin/pip3.$PY3_V 0 \
-    && update-alternatives --install /usr/local/bin/pip3 pip3 /usr/local/bin/pip3.$PY3_V 0 \
+    && update-alternatives --install /usr/bin/pip pip /usr/bin/pip3.$PY3_V 0 \
+    && update-alternatives --install /usr/bin/pip3 pip3 /usr/bin/pip3.$PY3_V 0 \
     && :
 
 RUN : Install pyright lsp \
