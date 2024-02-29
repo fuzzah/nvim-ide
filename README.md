@@ -15,6 +15,7 @@ Anyway, if you use it:
     * plenary.nvim
     * telescope.nvim
     * vim-crystal
+    * zig.vim
 * git
 * strace
 * npm
@@ -36,8 +37,8 @@ Anyway, if you use it:
 
 ## C#
 (installable with `--build-arg csharp=true`)
-* dotnet-sdk-7.0
-* csharp-ls 0.7.0
+* dotnet-sdk-8.0
+* csharp-ls 0.11.0
 
 
 ## C and C++
@@ -53,20 +54,20 @@ Anyway, if you use it:
 
 ## Go
 (installable with `--build-arg go=true`)
-* go1.20 from repos
+* go1.22 from repos
 * gopls lsp
 
 
 ## Python
 (installable with `--build-arg python=true`)
-* python3.12 from repos & pip via ensurepip
+* python3.12 + pip from repos
 * pyright lsp
 
 
 ## Rust
 (installable with `--build-arg rust=true`)
 * rustup
-* rustc & cargo 1.69.0
+* rustc & cargo 1.76.0
 * rust-analyzer lsp
 * gdb
 * ltrace
@@ -77,6 +78,14 @@ Anyway, if you use it:
 * typescript
 * eslint
 * typescript-language-server
+
+
+## Zig
+(installable with `--build-arg zig=true`)
+* zig 0.11 from repos
+* the zls language server
+* gdb
+* ltrace
 
 
 ## Common last stage
