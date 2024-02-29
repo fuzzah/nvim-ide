@@ -5,6 +5,7 @@ ARG go=false
 ARG python=false
 ARG rust=false
 ARG typescript=false
+ARG zig=false
 
 FROM opensuse/tumbleweed AS nvim-ide-base
 
@@ -21,22 +22,25 @@ RUN : Install common deps \
         glibc-locale \
         strace \
         npm ripgrep fd \
+        update-alternatives \
     && zypper clean -a \
     && :
 RUN ln -s /usr/bin/nvim /usr/bin/vim
 
-ENV LANG en_US.UTF-8
-
-RUN : Configure tmux \
-    && echo "set -g mouse on" > /etc/tmux.conf \
-    && mkdir -p /run/tmux \
-    && :
-ENV EDITOR=nvim
+ENV LANG=en_US.UTF-8
 
 # use --build-arg to change defaults:
 ARG uid=1000
 ARG gid=1000
 ARG user=dev
+
+RUN : Configure tmux \
+    && echo "set -g mouse on" > /etc/tmux.conf \
+    && mkdir -p /run/tmux \
+    && chown $uid:$gid -R /run/tmux \
+    && :
+
+ENV EDITOR=nvim
 
 RUN : Configure user \
     && useradd -m -u ${uid} ${user} \
@@ -69,17 +73,18 @@ FROM nvim-ide-base AS nvim-ide-crystal-false
 
 FROM nvim-ide-base AS nvim-ide-crystal-true
 
+ARG CRYSTAL_VERSION=1.11
 USER root
 # basically do as crystal devs suggest: https://crystal-lang.org/install/on_opensuse/
 RUN : \
     && zypper ar -f \
         https://download.opensuse.org/repositories/devel:/languages:/crystal/openSUSE_Tumbleweed/devel:languages:crystal.repo \
-    && zypper --gpg-auto-import-keys install -y crystal \
+    && zypper --gpg-auto-import-keys install -y "crystal$CRYSTAL_VERSION" \
     && zypper clean -a \
     && :
 
 # lsp
-ARG GIT_CRYSTALLINE_VERSION="0.9.0"
+ARG GIT_CRYSTALLINE_VERSION="0.12.2"
 RUN : \
     && cd /usr/bin/ \
     && curl -L \
@@ -94,12 +99,12 @@ RUN printf 'lua require("lspconfig").crystalline.setup{}\n\n' >> ~/.config/nvim/
 
 
 
-# sharp: C#
+# csharp: C#
 FROM nvim-ide-crystal-${crystal} AS nvim-ide-csharp-false
 
 FROM nvim-ide-crystal-${crystal} AS nvim-ide-csharp-true
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
-ARG DOTNET_VERSION=7.0
+ARG DOTNET_VERSION=8.0
 
 USER root
 RUN : \
@@ -109,13 +114,13 @@ RUN : \
     && rpm --import https://packages.microsoft.com/keys/microsoft.asc \
     && curl -L https://packages.microsoft.com/config/opensuse/15/prod.repo \
         -o /etc/zypp/repos.d/microsoft-prod.repo \
-    && zypper install -y dotnet-sdk-${DOTNET_VERSION} \
+    && zypper install -y dotnet-sdk-$DOTNET_VERSION \
     && zypper clean -a \
     && :
 
 USER ${user}
 
-ARG DOTNET_CSHARP_LS_VERSION=0.7.0
+ARG DOTNET_CSHARP_LS_VERSION=0.11.0
 RUN : Install csharp-ls LSP server \
     && dotnet tool install --no-cache --global \
         csharp-ls --version ${DOTNET_CSHARP_LS_VERSION} \
@@ -152,11 +157,12 @@ RUN printf 'lua require("lspconfig").clangd.setup{}\n\n' >> ~/.config/nvim/init.
 FROM nvim-ide-cxx-${cxx} AS nvim-ide-go-false
 
 FROM nvim-ide-cxx-${cxx} AS nvim-ide-go-true
+ARG GO=1.22
 USER root
 RUN : \
     && zypper update -y \
     && zypper install -y \
-        go1.20 go1.20-race go1.20-libstd go1.20-doc \
+        go$GO go$GO-race go$GO-libstd go$GO-doc \
     && zypper clean -a \
     && :
 
@@ -175,21 +181,18 @@ RUN printf 'lua require("lspconfig").gopls.setup{}\n\n' >> ~/.config/nvim/init.v
 FROM nvim-ide-go-${go} AS nvim-ide-python-false
 
 FROM nvim-ide-go-${go} AS nvim-ide-python-true
-ARG PY3_V=11
+ARG PY3=12
 USER root
 RUN : Install python and pip \
     && zypper update -y \
     && zypper install -y \
-        python3$PY3_V \
-        python3$PY3_V-pip \
+        python3$PY3 python3$PY3-pip \
     && zypper clean -a \
     && :
 
 RUN : update-alternatives for python and pip \
-    && update-alternatives --install /usr/bin/python python /usr/bin/python3.$PY3_V 0 \
-    && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.$PY3_V 0 \
-    && update-alternatives --install /usr/bin/pip pip /usr/bin/pip3.$PY3_V 0 \
-    && update-alternatives --install /usr/bin/pip3 pip3 /usr/bin/pip3.$PY3_V 0 \
+    && update-alternatives --install /usr/bin/python python /usr/bin/python3.$PY3 0 \
+    && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.$PY3 0 \
     && :
 
 RUN : Install pyright lsp \
@@ -222,21 +225,21 @@ RUN : \
     && :
 
 USER ${user}
-ARG RUST_VERSION=1.69.0
+ARG RUST_VERSION=1.76.0
 RUN : \
-    && rustup toolchain install ${RUST_VERSION} \
+    && rustup toolchain install $RUST_VERSION \
     && :
 
-ARG RUST_ANALYZER_VERSION="2023-05-29"
+ARG RUST_ANALYZER_VERSION="2024-02-26"
 RUN : \
     && mkdir -p ~/.local/bin \
     && cd ~/.local/bin \
     && curl -L \
-        https://github.com/rust-lang/rust-analyzer/releases/download/${RUST_ANALYZER_VERSION}/rust-analyzer-x86_64-unknown-linux-gnu.gz \
+        https://github.com/rust-lang/rust-analyzer/releases/download/$RUST_ANALYZER_VERSION/rust-analyzer-x86_64-unknown-linux-gnu.gz \
         | gunzip -c - > ./rust-analyzer \
     && chmod a+x ./rust-analyzer \
     && :
-ENV PATH="/home/${user}/.local/bin:${PATH}"
+ENV PATH="/home/$user/.local/bin:$PATH"
 
 RUN printf 'lua require("lspconfig").rust_analyzer.setup{}\n\n' >> ~/.config/nvim/init.vim
 
@@ -260,7 +263,34 @@ RUN printf 'lua require("lspconfig").tsserver.setup{}\n\n' >> ~/.config/nvim/ini
 
 
 
-FROM nvim-ide-typescript-${typescript} AS nvim-ide
+FROM nvim-ide-typescript-${typescript} AS nvim-ide-zig-false
+
+FROM nvim-ide-typescript-${typescript} AS nvim-ide-zig-true
+ARG ZIG=0.11.0
+USER root
+RUN : \
+    && zypper update -y \
+    && zypper install -y -f zig-$ZIG \
+        gdb ltrace \
+    && zypper clean -a \
+    && :
+
+ARG ZLS=0.11.0
+ARG ZLS_TAR_URL="https://github.com/zigtools/zls/releases/download/$ZLS/zls-x86_64-linux.tar.gz"
+RUN : \
+    && cd /usr/local/bin \
+    && curl -L "$ZLS_TAR_URL" \
+        | tar -zx --strip-components=2 \
+    && chmod +x ./zls \
+    && :
+
+USER ${user}
+
+RUN printf 'lua require("lspconfig").zls.setup{}\n\n' >> ~/.config/nvim/init.vim
+
+
+
+FROM nvim-ide-zig-${zig} AS nvim-ide
 
 RUN : \
     && printf '\n\
@@ -279,4 +309,3 @@ RUN : \
     && cat /tmp/bindings.nvim.init >> ~/.config/nvim/init.vim \
     && rm /tmp/bindings.nvim.init \
     && :
-
