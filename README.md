@@ -8,7 +8,7 @@ Anyway, if you use it:
 # What's inside
 ## Base image
 * uses opensuse/tumbleweed
-* nvim 0.9+ with vim-plug and plugins:
+* nvim 0.10+ with vim-plug and plugins:
     * vim-airline
     * nvim-lspconfig
     * nvim-treesitter
@@ -31,14 +31,14 @@ Anyway, if you use it:
 
 ## Crystal
 (installable with `--build-arg crystal=true`)
-* crystal with `shards` package manager
+* crystal 0.13 with `shards` package manager
 * crystalline lsp
 
 
 ## C#
 (installable with `--build-arg csharp=true`)
 * dotnet-sdk-8.0
-* csharp-ls 0.11.0
+* csharp-ls
 
 
 ## C and C++
@@ -67,7 +67,7 @@ Anyway, if you use it:
 ## Rust
 (installable with `--build-arg rust=true`)
 * rustup
-* rustc & cargo 1.76.0
+* rustc & cargo 1.79.0
 * rust-analyzer lsp
 * gdb
 * ltrace
@@ -82,7 +82,7 @@ Anyway, if you use it:
 
 ## Zig
 (installable with `--build-arg zig=true`)
-* zig 0.11 from repos
+* zig 0.13 from repos
 * the zls language server
 * gdb
 * ltrace

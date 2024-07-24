@@ -73,7 +73,7 @@ FROM nvim-ide-base AS nvim-ide-crystal-false
 
 FROM nvim-ide-base AS nvim-ide-crystal-true
 
-ARG CRYSTAL_VERSION=1.11
+ARG CRYSTAL_VERSION=1.13
 USER root
 # basically do as crystal devs suggest: https://crystal-lang.org/install/on_opensuse/
 RUN : \
@@ -84,11 +84,11 @@ RUN : \
     && :
 
 # lsp
-ARG GIT_CRYSTALLINE_VERSION="0.12.2"
+ARG GIT_CRYSTALLINE_VERSION=0.13.1
 RUN : \
     && cd /usr/bin/ \
     && curl -L \
-        https://github.com/elbywan/crystalline/releases/download/v${GIT_CRYSTALLINE_VERSION}/crystalline_x86_64-unknown-linux-musl.gz \
+        "https://github.com/elbywan/crystalline/releases/download/v$GIT_CRYSTALLINE_VERSION/crystalline_x86_64-unknown-linux-musl.gz" \
         | gzip -d > ./crystalline \
     && chown ${user}:${user} ./crystalline \
     && chmod a+x ./crystalline \
@@ -114,16 +114,16 @@ RUN : \
     && rpm --import https://packages.microsoft.com/keys/microsoft.asc \
     && curl -L https://packages.microsoft.com/config/opensuse/15/prod.repo \
         -o /etc/zypp/repos.d/microsoft-prod.repo \
-    && zypper install -y dotnet-sdk-$DOTNET_VERSION \
+    && zypper install -y dotnet-sdk-"$DOTNET_VERSION" \
     && zypper clean -a \
     && :
 
 USER ${user}
 
-ARG DOTNET_CSHARP_LS_VERSION=0.11.0
+ARG DOTNET_CSHARP_LS_VERSION=0.14.0
 RUN : Install csharp-ls LSP server \
     && dotnet tool install --no-cache --global \
-        csharp-ls --version ${DOTNET_CSHARP_LS_VERSION} \
+        csharp-ls --version "$DOTNET_CSHARP_LS_VERSION" \
     && :
 ENV PATH "$PATH:/home/${user}/.dotnet/tools"
 
@@ -225,17 +225,17 @@ RUN : \
     && :
 
 USER ${user}
-ARG RUST_VERSION=1.76.0
+ARG RUST_VERSION=1.79.0
 RUN : \
-    && rustup toolchain install $RUST_VERSION \
+    && rustup toolchain install "$RUST_VERSION" \
     && :
 
-ARG RUST_ANALYZER_VERSION="2024-02-26"
+ARG RUST_ANALYZER_VERSION=2024-07-22
 RUN : \
     && mkdir -p ~/.local/bin \
     && cd ~/.local/bin \
     && curl -L \
-        https://github.com/rust-lang/rust-analyzer/releases/download/$RUST_ANALYZER_VERSION/rust-analyzer-x86_64-unknown-linux-gnu.gz \
+        "https://github.com/rust-lang/rust-analyzer/releases/download/$RUST_ANALYZER_VERSION/rust-analyzer-x86_64-unknown-linux-gnu.gz" \
         | gunzip -c - > ./rust-analyzer \
     && chmod a+x ./rust-analyzer \
     && :
@@ -266,7 +266,7 @@ RUN printf 'lua require("lspconfig").tsserver.setup{}\n\n' >> ~/.config/nvim/ini
 FROM nvim-ide-typescript-${typescript} AS nvim-ide-zig-false
 
 FROM nvim-ide-typescript-${typescript} AS nvim-ide-zig-true
-ARG ZIG=0.11.0
+ARG ZIG=0.13.0
 USER root
 RUN : \
     && zypper update -y \
@@ -275,12 +275,12 @@ RUN : \
     && zypper clean -a \
     && :
 
-ARG ZLS=0.11.0
-ARG ZLS_TAR_URL="https://github.com/zigtools/zls/releases/download/$ZLS/zls-x86_64-linux.tar.gz"
+ARG ZLS=0.13.0
+ARG ZLS_TAR_URL="https://github.com/zigtools/zls/releases/download/$ZLS/zls-x86_64-linux.tar.xz"
 RUN : \
     && cd /usr/local/bin \
     && curl -L "$ZLS_TAR_URL" \
-        | tar -zx --strip-components=2 \
+        | tar -Jx \
     && chmod +x ./zls \
     && :
 
