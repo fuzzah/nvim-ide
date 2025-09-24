@@ -61,7 +61,7 @@ RUN : Configure neovim \
     && nvim --headless +PlugInstall +qall \
     && :
 
-RUN printf '\n\n' >> ~/.config/nvim/init.vim
+RUN mkdir -p ~/.config/nvim && printf '\n\n' >> ~/.config/nvim/init.vim
 
 WORKDIR /src
 ENV TERM=xterm-256color
@@ -95,7 +95,7 @@ RUN : \
     && :
 
 USER ${user}
-RUN printf 'lua require("lspconfig").crystalline.setup{}\n\n' >> ~/.config/nvim/init.vim
+RUN mkdir -p ~/.config/nvim && printf 'lua require("lspconfig").crystalline.setup{}\n\n' >> ~/.config/nvim/init.vim
 
 
 
@@ -127,7 +127,7 @@ RUN : Install csharp-ls LSP server \
     && :
 ENV PATH "$PATH:/home/${user}/.dotnet/tools"
 
-RUN printf 'lua require("lspconfig").csharp_ls.setup{}\n\n' >> ~/.config/nvim/init.vim
+RUN mkdir -p ~/.config/nvim && printf 'lua require("lspconfig").csharp_ls.setup{}\n\n' >> ~/.config/nvim/init.vim
 
 
 
@@ -149,7 +149,7 @@ RUN : \
     && :
 
 USER ${user}
-RUN printf 'lua require("lspconfig").clangd.setup{}\n\n' >> ~/.config/nvim/init.vim
+RUN mkdir -p ~/.config/nvim && printf 'lua require("lspconfig").clangd.setup{}\n\n' >> ~/.config/nvim/init.vim
 
 
 
@@ -157,7 +157,7 @@ RUN printf 'lua require("lspconfig").clangd.setup{}\n\n' >> ~/.config/nvim/init.
 FROM nvim-ide-cxx-${cxx} AS nvim-ide-go-false
 
 FROM nvim-ide-cxx-${cxx} AS nvim-ide-go-true
-ARG GO=1.22
+ARG GO=1.24
 USER root
 RUN : \
     && zypper update -y \
@@ -173,7 +173,7 @@ RUN : Install the gopls lsp \
 
 ENV PATH="/home/${user}/go/bin:${PATH}"
 
-RUN printf 'lua require("lspconfig").gopls.setup{}\n\n' >> ~/.config/nvim/init.vim
+RUN mkdir -p ~/.config/nvim && printf 'lua require("lspconfig").gopls.setup{}\n\n' >> ~/.config/nvim/init.vim
 
 
 
@@ -201,10 +201,11 @@ RUN : Install pyright lsp \
 
 USER ${user}
 
-RUN printf 'lua require("lspconfig").pyright.setup{}\n\n' >> ~/.config/nvim/init.vim
+RUN mkdir -p ~/.config/nvim && printf 'lua require("lspconfig").pyright.setup{}\n\n' >> ~/.config/nvim/init.vim
 
 COPY --chown=${uid}:${gid} python.fish /tmp/
 RUN : \
+    && mkdir -p ~/.config/fish \
     && cat /tmp/python.fish >> ~/.config/fish/config.fish \
     && rm /tmp/python.fish \
     && :
@@ -241,7 +242,7 @@ RUN : \
     && :
 ENV PATH="/home/$user/.local/bin:$PATH"
 
-RUN printf 'lua require("lspconfig").rust_analyzer.setup{}\n\n' >> ~/.config/nvim/init.vim
+RUN mkdir -p ~/.config/nvim && printf 'lua require("lspconfig").rust_analyzer.setup{}\n\n' >> ~/.config/nvim/init.vim
 
 
 
@@ -259,7 +260,7 @@ RUN : \
 
 USER ${user}
 
-RUN printf 'lua require("lspconfig").tsserver.setup{}\n\n' >> ~/.config/nvim/init.vim
+RUN mkdir -p ~/.config/nvim && printf 'lua require("lspconfig").tsserver.setup{}\n\n' >> ~/.config/nvim/init.vim
 
 
 
@@ -286,13 +287,14 @@ RUN : \
 
 USER ${user}
 
-RUN printf 'lua require("lspconfig").zls.setup{}\n\n' >> ~/.config/nvim/init.vim
+RUN mkdir -p ~/.config/nvim && printf 'lua require("lspconfig").zls.setup{}\n\n' >> ~/.config/nvim/init.vim
 
 
 
 FROM nvim-ide-zig-${zig} AS nvim-ide
 
 RUN : \
+    && mkdir -p ~/.config/nvim \
     && printf '\n\
 set completeopt-=preview\n\
 autocmd Filetype * setlocal omnifunc=v:lua.vim.lsp.omnifunc\n\
