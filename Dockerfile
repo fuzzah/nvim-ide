@@ -43,17 +43,18 @@ RUN : Configure tmux \
 ENV EDITOR=nvim
 
 RUN : Configure user \
-    && useradd -m -u ${uid} ${user} \
-    && echo ${user} "ALL=(ALL:ALL) NOPASSWD: ALL" >> /etc/sudoers \
+    && useradd -m -l -u "$uid" "$user" \
+    && echo "$user ALL=(ALL:ALL) NOPASSWD: ALL" >> /etc/sudoers \
+    && mkdir -p /home/$user/.config/nvim \
     && :
-USER ${user}
+USER $user
 
-COPY --chown=${uid}:${gid} base.fish /home/${user}/.config/fish/config.fish
+COPY --chown=$uid:$gid base.fish /home/$user/.config/fish/config.fish
 RUN : Configure fish \
     && echo "exec fish" >> ~/.bashrc \
     && :
 
-COPY --chown=${uid}:${gid} base.nvim.init /home/${user}/.config/nvim/init.vim
+COPY --chown=$uid:$gid base.nvim.init /home/$user/.config/nvim/init.vim
 RUN : Configure neovim \
     && curl -fLo ~/.local/share/nvim/site/autoload/plug.vim \
         --create-dirs \
@@ -73,28 +74,28 @@ FROM nvim-ide-base AS nvim-ide-crystal-false
 
 FROM nvim-ide-base AS nvim-ide-crystal-true
 
-ARG CRYSTAL_VERSION=1.13
+ARG CRYSTAL_VERSION=1.18
 USER root
 # basically do as crystal devs suggest: https://crystal-lang.org/install/on_opensuse/
 RUN : \
     && zypper ar -f \
         https://download.opensuse.org/repositories/devel:/languages:/crystal/openSUSE_Tumbleweed/devel:languages:crystal.repo \
-    && zypper --gpg-auto-import-keys install -y "crystal$CRYSTAL_VERSION" \
+    && zypper --gpg-auto-import-keys install -y crystal"$CRYSTAL_VERSION" \
     && zypper clean -a \
     && :
 
 # lsp
-ARG GIT_CRYSTALLINE_VERSION=0.13.1
+ARG GIT_CRYSTALLINE_VERSION=0.17.1
 RUN : \
     && cd /usr/bin/ \
     && curl -L \
         "https://github.com/elbywan/crystalline/releases/download/v$GIT_CRYSTALLINE_VERSION/crystalline_x86_64-unknown-linux-musl.gz" \
         | gzip -d > ./crystalline \
-    && chown ${user}:${user} ./crystalline \
+    && chown "$user:$user" ./crystalline \
     && chmod a+x ./crystalline \
     && :
 
-USER ${user}
+USER $user
 RUN printf 'lua require("lspconfig").crystalline.setup{}\n\n' >> ~/.config/nvim/init.vim
 
 
@@ -107,6 +108,13 @@ ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
 ARG DOTNET_VERSION=8.0
 
 USER root
+# https://github.com/dotnet/runtime/issues/113346#issuecomment-2888737511
+RUN : \
+    && curl -o libopenssl.rpm -L "https://download.opensuse.org/distribution/leap/15.6/repo/oss/x86_64/libopenssl1_0_0-1.0.2p-150000.3.91.1.x86_64.rpm" \
+    && zypper install -y ./libopenssl.rpm \
+    && rm -f libopenssl.rpm \
+    && :
+
 RUN : \
     && zypper update -y \
     && zypper install -y \
@@ -118,14 +126,14 @@ RUN : \
     && zypper clean -a \
     && :
 
-USER ${user}
+USER $user
 
 ARG DOTNET_CSHARP_LS_VERSION=0.14.0
 RUN : Install csharp-ls LSP server \
     && dotnet tool install --no-cache --global \
         csharp-ls --version "$DOTNET_CSHARP_LS_VERSION" \
     && :
-ENV PATH "$PATH:/home/${user}/.dotnet/tools"
+ENV PATH "$PATH:/home/$user/.dotnet/tools"
 
 RUN printf 'lua require("lspconfig").csharp_ls.setup{}\n\n' >> ~/.config/nvim/init.vim
 
@@ -148,7 +156,7 @@ RUN : \
     && zypper clean -a \
     && :
 
-USER ${user}
+USER $user
 RUN printf 'lua require("lspconfig").clangd.setup{}\n\n' >> ~/.config/nvim/init.vim
 
 
@@ -157,21 +165,21 @@ RUN printf 'lua require("lspconfig").clangd.setup{}\n\n' >> ~/.config/nvim/init.
 FROM nvim-ide-cxx-${cxx} AS nvim-ide-go-false
 
 FROM nvim-ide-cxx-${cxx} AS nvim-ide-go-true
-ARG GO=1.22
+ARG GO=1.25
 USER root
 RUN : \
     && zypper update -y \
     && zypper install -y \
-        go$GO go$GO-race go$GO-libstd go$GO-doc \
+        go"$GO" go"$GO"-race go"$GO"-libstd go"$GO"-doc \
     && zypper clean -a \
     && :
 
-USER ${user}
+USER $user
 RUN : Install the gopls lsp \
     && go install golang.org/x/tools/gopls@latest \
     && :
 
-ENV PATH="/home/${user}/go/bin:${PATH}"
+ENV PATH="/home/$user/go/bin:$PATH"
 
 RUN printf 'lua require("lspconfig").gopls.setup{}\n\n' >> ~/.config/nvim/init.vim
 
@@ -186,24 +194,24 @@ USER root
 RUN : Install python and pip \
     && zypper update -y \
     && zypper install -y \
-        python3$PY3 python3$PY3-pip \
+        python3"$PY3" python3"$PY3"-pip \
     && zypper clean -a \
     && :
 
 RUN : update-alternatives for python and pip \
-    && update-alternatives --install /usr/bin/python python /usr/bin/python3.$PY3 0 \
-    && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.$PY3 0 \
+    && update-alternatives --install /usr/bin/python python /usr/bin/python3."$PY3" 0 \
+    && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3."$PY3" 0 \
     && :
 
 RUN : Install pyright lsp \
     && npm install -g pyright \
     && :
 
-USER ${user}
+USER $user
 
 RUN printf 'lua require("lspconfig").pyright.setup{}\n\n' >> ~/.config/nvim/init.vim
 
-COPY --chown=${uid}:${gid} python.fish /tmp/
+COPY --chown=$uid:$gid python.fish /tmp/
 RUN : \
     && cat /tmp/python.fish >> ~/.config/fish/config.fish \
     && rm /tmp/python.fish \
@@ -224,13 +232,13 @@ RUN : \
     && zypper clean -a \
     && :
 
-USER ${user}
-ARG RUST_VERSION=1.79.0
+USER $user
+ARG RUST_VERSION=1.91.0
 RUN : \
     && rustup toolchain install "$RUST_VERSION" \
     && :
 
-ARG RUST_ANALYZER_VERSION=2024-07-22
+ARG RUST_ANALYZER_VERSION=2025-12-01
 RUN : \
     && mkdir -p ~/.local/bin \
     && cd ~/.local/bin \
@@ -257,7 +265,7 @@ RUN : \
         typescript-language-server \
     && :
 
-USER ${user}
+USER $user
 
 RUN printf 'lua require("lspconfig").tsserver.setup{}\n\n' >> ~/.config/nvim/init.vim
 
@@ -266,16 +274,18 @@ RUN printf 'lua require("lspconfig").tsserver.setup{}\n\n' >> ~/.config/nvim/ini
 FROM nvim-ide-typescript-${typescript} AS nvim-ide-zig-false
 
 FROM nvim-ide-typescript-${typescript} AS nvim-ide-zig-true
-ARG ZIG=0.13.0
+
+# NOTE: using <= with this version:
+ARG ZIG_BEFORE=0.16.0
 USER root
 RUN : \
     && zypper update -y \
-    && zypper install -y -f zig-$ZIG \
+    && zypper install -y -f zig"<$ZIG_BEFORE" zig-libs"<$ZIG_BEFORE" \
         gdb ltrace \
     && zypper clean -a \
     && :
 
-ARG ZLS=0.13.0
+ARG ZLS=0.15.0
 ARG ZLS_TAR_URL="https://github.com/zigtools/zls/releases/download/$ZLS/zls-x86_64-linux.tar.xz"
 RUN : \
     && cd /usr/local/bin \
@@ -284,7 +294,7 @@ RUN : \
     && chmod +x ./zls \
     && :
 
-USER ${user}
+USER $user
 
 RUN printf 'lua require("lspconfig").zls.setup{}\n\n' >> ~/.config/nvim/init.vim
 
@@ -304,7 +314,7 @@ colorscheme murphy\n\
 \n' >> ~/.config/nvim/init.vim \
     && :
 
-COPY --chown=${uid}:${gid} bindings.nvim.init /tmp/
+COPY --chown=$uid:$gid bindings.nvim.init /tmp/
 RUN : \
     && cat /tmp/bindings.nvim.init >> ~/.config/nvim/init.vim \
     && rm /tmp/bindings.nvim.init \

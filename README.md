@@ -8,7 +8,7 @@ Anyway, if you use it:
 # What's inside
 ## Base image
 * uses opensuse/tumbleweed
-* nvim 0.10+ with vim-plug and plugins:
+* nvim with vim-plug and plugins:
     * vim-airline
     * nvim-lspconfig
     * nvim-treesitter
@@ -31,7 +31,7 @@ Anyway, if you use it:
 
 ## Crystal
 (installable with `--build-arg crystal=true`)
-* crystal 0.13 with `shards` package manager
+* crystal with its package manager `shards`
 * crystalline lsp
 
 
@@ -54,20 +54,20 @@ Anyway, if you use it:
 
 ## Go
 (installable with `--build-arg go=true`)
-* go1.22 from repos
+* go from repos
 * gopls lsp
 
 
 ## Python
 (installable with `--build-arg python=true`)
-* python3.12 + pip from repos
+* python + pip from repos
 * pyright lsp
 
 
 ## Rust
 (installable with `--build-arg rust=true`)
 * rustup
-* rustc & cargo 1.79.0
+* rustc & cargo
 * rust-analyzer lsp
 * gdb
 * ltrace
@@ -82,7 +82,7 @@ Anyway, if you use it:
 
 ## Zig
 (installable with `--build-arg zig=true`)
-* zig 0.13 from repos
+* zig from repos
 * the zls language server
 * gdb
 * ltrace
@@ -109,7 +109,7 @@ DOCKER_BUILDKIT=1 docker build \
     --build-arg uid=$(id -u) --build-arg gid=$(id -g) \
     --build-arg cxx=true --build-arg python=true -t fuzzah-nvim-ide .
 ```
-**Note: without buildkit image building may fail.**<br>
+**Note: without buildkit the image building may fail.**<br>
 If you run `docker build` as root, you may want to use specific values for uid and gid:
 ```shell
 DOCKER_BUILDKIT=1 docker build \
@@ -121,10 +121,11 @@ DOCKER_BUILDKIT=1 docker build \
 
 ### Run with your sources
 ```shell
-docker run --pull=never --rm -v /your/sources:/src -it fuzzah-nvim-ide
+cd myproject
+docker run --pull=never --rm -v $(pwd):/src -w /src -it fuzzah-nvim-ide
 ```
 
-Note, that nvim is symlinked to vim.
+Note: vim is a simlink to nvim.
 
 
 # FAQ
@@ -135,5 +136,5 @@ bash --norc
 ```
 
 ## Why opensuse/tumbleweed? Why not alpine?
-Tumbleweed provides recent versions of python, clang, gcc and most importantly neovim.<br>
+Tumbleweed provides recent versions of python, clang, gcc, and most importantly neovim.<br>
 Alpine would cause problems with python wheels and also with C/C++ as it's built with musl.<br>
